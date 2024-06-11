@@ -9,7 +9,7 @@ import 'package:tic_tak_game/domain/usecases/reload_task_usecase.dart';
 import 'package:tic_tak_game/domain/usecases/remove_task_usecase.dart';
 import 'package:tic_tak_game/presentation/cubits/task_cubit.dart';
 
-final sl = GetIt.instance;
+GetIt sl = GetIt.instance;
 
 void init() {
   // Cubit

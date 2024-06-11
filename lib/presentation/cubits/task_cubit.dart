@@ -1,4 +1,3 @@
-// lib/presentation/cubit/task_cubit.dart
 import 'package:bloc/bloc.dart';
 import 'package:tic_tak_game/domain/entities/entity.dart';
 import 'package:tic_tak_game/domain/usecases/add_task_usecase.dart';
@@ -21,20 +20,56 @@ class TaskCubit extends Cubit<TaskState> {
     required this.completeTaskUseCase,
     required this.removeTaskUseCase,
     required this.reloadTasksUseCase,
-  }) : super(TaskInitial());
+  }) : super(TaskInitial()) {
+    loadTasks();
+  }
 
   void loadTasks() {
-    // Load tasks using repository streams
-    // Listen to task streams and emit states accordingly
-    // This is a placeholder; actual implementation will depend on the repository
+    emit(TaskLoading());
+    try {
+      reloadTasksUseCase();
+      reloadTasksUseCase.repository
+          .watchUnassignedTasks()
+          .listen((unassignedTasks) {
+        _updateTasks(unassignedTasks, null, null);
+      });
+      reloadTasksUseCase.repository
+          .watchAssignedTasks()
+          .listen((assignedTasks) {
+        _updateTasks(null, assignedTasks, null);
+      });
+      reloadTasksUseCase.repository
+          .watchCompletedTasks()
+          .listen((completedTasks) {
+        _updateTasks(null, null, completedTasks);
+      });
+    } catch (e) {
+      emit(TaskError(e.toString()));
+    }
+  }
+
+  void _updateTasks(List<Task>? unassignedTasks, List<Task>? assignedTasks,
+      List<Task>? completedTasks) {
+    final currentState = state;
+    if (currentState is TaskLoaded) {
+      emit(TaskLoaded(
+        unassignedTasks: unassignedTasks ?? currentState.unassignedTasks,
+        assignedTasks: assignedTasks ?? currentState.assignedTasks,
+        completedTasks: completedTasks ?? currentState.completedTasks,
+      ));
+    } else {
+      emit(TaskLoaded(
+        unassignedTasks: unassignedTasks ?? [],
+        assignedTasks: assignedTasks ?? [],
+        completedTasks: completedTasks ?? [],
+      ));
+    }
   }
 
   void addTask(Task task) async {
     try {
       emit(TaskLoading());
       await addTaskUseCase(task);
-      emit(TaskInitial());
-      loadTasks();
     } catch (e) {
       emit(TaskError(e.toString()));
     }
@@ -44,8 +79,6 @@ class TaskCubit extends Cubit<TaskState> {
     try {
       emit(TaskLoading());
       await assignTaskUseCase(task);
-      emit(TaskInitial());
-      loadTasks();
     } catch (e) {
       emit(TaskError(e.toString()));
     }
@@ -55,8 +88,6 @@ class TaskCubit extends Cubit<TaskState> {
     try {
       emit(TaskLoading());
       await completeTaskUseCase(task);
-      emit(TaskInitial());
-      loadTasks();
     } catch (e) {
       emit(TaskError(e.toString()));
     }
@@ -66,8 +97,6 @@ class TaskCubit extends Cubit<TaskState> {
     try {
       emit(TaskLoading());
       await removeTaskUseCase(task);
-      emit(TaskInitial());
-      loadTasks();
     } catch (e) {
       emit(TaskError(e.toString()));
     }
@@ -77,8 +106,6 @@ class TaskCubit extends Cubit<TaskState> {
     try {
       emit(TaskLoading());
       await reloadTasksUseCase();
-      emit(TaskInitial());
-      loadTasks();
     } catch (e) {
       emit(TaskError(e.toString()));
     }

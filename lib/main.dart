@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tak_game/di.dart';
 import 'package:tic_tak_game/presentation/pages/add_task_page.dart';
 
 void main() {
+  init();
   runApp(const MyApp());
 }
 

@@ -20,15 +20,15 @@ class TasksBody extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   color: Colors.grey.shade300,
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 15,
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text('Name'), Text('Time')],
+                    children: [Text('Task ${index + 1}'), const Text('Time')],
                   ),
                 ),
               );
