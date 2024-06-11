@@ -5,7 +5,14 @@ import 'package:tic_tak_game/presentation/pages/unassigned_page.dart';
 import 'package:tic_tak_game/presentation/widgets/appbar_widget.dart';
 
 class TasksPage extends StatefulWidget {
-  const TasksPage({super.key});
+  final int numberOfTasks;
+  final int sequenceOfTasks;
+
+  const TasksPage({
+    super.key,
+    required this.numberOfTasks,
+    required this.sequenceOfTasks,
+  });
 
   @override
   State<TasksPage> createState() => _TasksPageState();
@@ -55,10 +62,16 @@ class _TasksPageState extends State<TasksPage>
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
-                    children: const [
-                      UnAssignedPage(),
-                      AssignedPage(),
-                      CompletedPage(),
+                    children: [
+                      UnAssignedPage(
+                        numberOfTasks: widget.numberOfTasks,
+                        sequenceOfTasks: widget.sequenceOfTasks,
+                      ),
+                      const AssignedPage(),
+                      CompletedPage(
+                        sequenceOfTasks: widget.sequenceOfTasks,
+                        numberOfTasks: widget.numberOfTasks,
+                      ),
                     ],
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:tic_tak_game/common/buttons.dart';
 import 'package:tic_tak_game/common/textfield.dart';
@@ -15,6 +16,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   final TextEditingController _numberOfTasks = TextEditingController();
   final TextEditingController _sequenceOfTasks = TextEditingController();
   bool _isButtonEnabled = false;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   void dispose() {
     _numberOfTasks.dispose();
     _sequenceOfTasks.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -34,6 +37,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
     setState(() {
       _isButtonEnabled =
           _numberOfTasks.text.isNotEmpty && _sequenceOfTasks.text.isNotEmpty;
+    });
+  }
+
+  void _startTimer(int minutes) {
+    _timer?.cancel(); // Cancel any existing timer
+    _timer = Timer(Duration(minutes: minutes), () {
+      // Timer expired logic here
+      // You can show a dialog, notification, or perform any other action
+      print("Timer expired after $minutes minutes");
     });
   }
 
@@ -59,8 +71,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
                 const SizedBox(height: 20),
                 TextFieldWidget(
-                  label: const Text('Sequence of each task'),
-                  hintText: 'Sequence of each task',
+                  label: const Text('Time in minutes'),
+                  hintText: 'Time in minutes',
                   keyboardType: TextInputType.number,
                   mycontroller: _sequenceOfTasks,
                 ),
@@ -70,8 +82,21 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   color: _isButtonEnabled ? Colors.teal : Colors.grey,
                   onPressed: _isButtonEnabled
                       ? () {
+                          int numberOfTasks = int.parse(_numberOfTasks.text);
+                          int minutes = int.parse(_sequenceOfTasks.text);
+                          int sequenceOfTasks =
+                              int.parse(_sequenceOfTasks.text);
+
+                          // Start the timer
+                          _startTimer(minutes);
+
+                          // Navigate to the TasksPage immediately
                           Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const TasksPage()));
+                            builder: (context) => TasksPage(
+                              numberOfTasks: numberOfTasks,
+                              sequenceOfTasks: sequenceOfTasks,
+                            ),
+                          ));
                         }
                       : null,
                   text: 'Go',
