@@ -1,7 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tic_tak_game/common/buttons.dart';
 import 'package:tic_tak_game/common/textfield.dart';
+import 'package:tic_tak_game/presentation/cubits/cubit/tasks_cubit.dart';
 import 'package:tic_tak_game/presentation/pages/tasks_page.dart';
 import 'package:tic_tak_game/presentation/widgets/appbar_widget.dart';
 
@@ -45,7 +48,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
     _timer = Timer(Duration(minutes: minutes), () {
       // Timer expired logic here
       // You can show a dialog, notification, or perform any other action
-      print("Timer expired after $minutes minutes");
     });
   }
 
@@ -89,13 +91,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
                           // Start the timer
                           _startTimer(minutes);
+                          BlocProvider.of<TasksCubit>(context)
+                              .getTasks(numberOfTasks, sequenceOfTasks);
 
                           // Navigate to the TasksPage immediately
                           Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => TasksPage(
-                              numberOfTasks: numberOfTasks,
-                              sequenceOfTasks: sequenceOfTasks,
-                            ),
+                            builder: (context) => const TasksPage(),
                           ));
                         }
                       : null,

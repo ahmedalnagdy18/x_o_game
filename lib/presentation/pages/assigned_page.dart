@@ -1,5 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tic_tak_game/domain/entities/entity.dart';
+import 'package:tic_tak_game/presentation/cubits/cubit/tasks_cubit.dart';
+import 'package:tic_tak_game/presentation/cubits/cubit/tasks_state.dart';
 
 class AssignedPage extends StatefulWidget {
   const AssignedPage({super.key});
@@ -15,6 +19,7 @@ class _AssignedPageState extends State<AssignedPage> {
   int xScore = 0;
   int filledBoxes = 0;
   bool gameOver = false;
+  Task? task;
 
   @override
   void initState() {
@@ -24,70 +29,105 @@ class _AssignedPageState extends State<AssignedPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.grey.shade300,
-              ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 15),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [Text('Name'), Text('Time')],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Player '${oTurn ? 'O' : 'X'}' Turn",
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-                fontSize: 18,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              flex: 4,
-              child: GridView.builder(
-                itemCount: 9,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                ),
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-                      _tapped(index);
-                    },
-                    child: Container(
+    if (task != null && task!.endTime.isBefore(DateTime.now())) {
+      task = null;
+    } else {
+      task = BlocProvider.of<TasksCubit>(context).assignedTask;
+    }
+
+    return BlocConsumer<TasksCubit, TasksState>(
+      listener: (context, state) {
+        if (task != null && task!.endTime.isBefore(DateTime.now())) {
+          BlocProvider.of<TasksCubit>(context).close();
+          Navigator.pop(context);
+        }
+      },
+      builder: (context, state) => state is TasksLoad && task != null
+          ? Scaffold(
+              backgroundColor: Colors.white,
+              body: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                child: Column(
+                  children: [
+                    Container(
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey.shade300,
                       ),
-                      child: Center(
-                        child: Text(
-                          displayElement[index],
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 35,
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 15),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(task!.name),
+                            Text(task!.endTime
+                                .difference(DateTime.now())
+                                .inSeconds
+                                .toString())
+                          ],
                         ),
                       ),
                     ),
-                  );
-                },
+                    const SizedBox(height: 20),
+                    Text(
+                      "Player '${oTurn ? 'O' : 'X'}' Turn",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Expanded(
+                      flex: 4,
+                      child: GridView.builder(
+                        itemCount: 9,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              _tapped(index);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.white,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  displayElement[index],
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 35,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            )
+          : task == null
+              ? const Scaffold(
+                  body: Center(
+                  child: Text(
+                    "no assigned task",
+                  ),
+                ))
+              : const Scaffold(
+                  body: Center(
+                  child: CircularProgressIndicator(),
+                )),
     );
   }
 
@@ -187,8 +227,16 @@ class _AssignedPageState extends State<AssignedPage> {
                 backgroundColor: MaterialStatePropertyAll(Colors.teal),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
-                _resetBoard();
+                if (winner == 'X') {
+                  Navigator.of(context).pop();
+                  _resetBoard();
+                } else {
+                  BlocProvider.of<TasksCubit>(context).completetask(task!);
+                  BlocProvider.of<TasksCubit>(context).assignedTask = null;
+                  Navigator.of(context)
+                    ..pop()
+                    ..pop();
+                }
               },
               child: const Text(
                 " Ok ",
