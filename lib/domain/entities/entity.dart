@@ -1,6 +1,6 @@
 class Task {
   String name;
-  int duration; // Duration in seconds
+  int duration;
   DateTime endTime;
 
   Task({required this.name, required this.duration})

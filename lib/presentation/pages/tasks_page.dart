@@ -16,12 +16,12 @@ class TasksPage extends StatefulWidget {
 
 class _TasksPageState extends State<TasksPage>
     with SingleTickerProviderStateMixin {
-  static late TabController _tabController;
+  late final TabController tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -44,7 +44,7 @@ class _TasksPageState extends State<TasksPage>
                 TabBar(
                   dividerColor: Colors.white,
                   dividerHeight: 4,
-                  controller: _tabController,
+                  controller: tabController,
                   indicatorPadding: const EdgeInsets.all(10),
                   unselectedLabelColor: Colors.black,
                   labelColor: Colors.white,
@@ -57,11 +57,11 @@ class _TasksPageState extends State<TasksPage>
                 ),
                 Expanded(
                   child: TabBarView(
-                    controller: _tabController,
-                    children: const [
-                      UnAssignedPage(),
-                      AssignedPage(),
-                      CompletedPage(),
+                    controller: tabController,
+                    children: [
+                      UnAssignedPage(tabController: tabController),
+                      AssignedPage(tabController: tabController),
+                      const CompletedPage(),
                     ],
                   ),
                 ),

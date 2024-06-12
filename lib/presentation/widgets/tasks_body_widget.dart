@@ -3,13 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tic_tak_game/domain/entities/entity.dart';
 import 'package:tic_tak_game/presentation/cubits/cubit/tasks_cubit.dart';
 import 'package:tic_tak_game/presentation/cubits/cubit/tasks_state.dart';
-import 'package:tic_tak_game/presentation/pages/assigned_page.dart';
 
 class TasksBody extends StatefulWidget {
   const TasksBody({
     super.key,
+    required this.tabController,
   });
-
+  final TabController tabController;
   @override
   TasksBodyState createState() => TasksBodyState();
 }
@@ -25,6 +25,12 @@ class TasksBodyState extends State<TasksBody> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  String _formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int secs = seconds % 60;
+    return '$minutes:${secs.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -44,8 +50,8 @@ class TasksBodyState extends State<TasksBody> {
                   itemCount: state.tasks.length,
                   itemBuilder: (context, index) {
                     final task = state.tasks[index];
-                    final timeRemaining =
-                        task.endTime.difference(DateTime.now()).inSeconds;
+                    final timeRemaining = _formatTime(
+                        task.endTime.difference(DateTime.now()).inSeconds);
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
@@ -60,18 +66,14 @@ class TasksBodyState extends State<TasksBody> {
                           onTap: () {
                             BlocProvider.of<TasksCubit>(context).assignedTask =
                                 task;
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const AssignedPage(),
-                                ));
+                            widget.tabController.animateTo(1);
                           },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(task.name),
-                              Text('$timeRemaining s'),
+                              Text('$timeRemaining '),
                             ],
                           ),
                         ),

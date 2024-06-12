@@ -6,7 +6,8 @@ import 'package:tic_tak_game/presentation/cubits/cubit/tasks_cubit.dart';
 import 'package:tic_tak_game/presentation/cubits/cubit/tasks_state.dart';
 
 class AssignedPage extends StatefulWidget {
-  const AssignedPage({super.key});
+  const AssignedPage({super.key, required this.tabController});
+  final TabController tabController;
 
   @override
   State<AssignedPage> createState() => _AssignedPageState();
@@ -25,6 +26,12 @@ class _AssignedPageState extends State<AssignedPage> {
   void initState() {
     super.initState();
     _resetBoard();
+  }
+
+  String _formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int secs = seconds % 60;
+    return '$minutes:${secs.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -63,9 +70,9 @@ class _AssignedPageState extends State<AssignedPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(task!.name),
-                            Text(task!.endTime
-                                .difference(DateTime.now())
-                                .inSeconds
+                            Text(_formatTime(task!.endTime
+                                    .difference(DateTime.now())
+                                    .inSeconds)
                                 .toString())
                           ],
                         ),
@@ -233,9 +240,8 @@ class _AssignedPageState extends State<AssignedPage> {
                 } else {
                   BlocProvider.of<TasksCubit>(context).completetask(task!);
                   BlocProvider.of<TasksCubit>(context).assignedTask = null;
-                  Navigator.of(context)
-                    ..pop()
-                    ..pop();
+                  Navigator.of(context).pop();
+                  widget.tabController.animateTo(0);
                 }
               },
               child: const Text(
