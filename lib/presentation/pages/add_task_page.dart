@@ -44,11 +44,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   void _startTimer(int minutes) {
-    _timer?.cancel(); // Cancel any existing timer
-    _timer = Timer(Duration(minutes: minutes), () {
-      // Timer expired logic here
-      // You can show a dialog, notification, or perform any other action
-    });
+    _timer?.cancel();
+    _timer = Timer(Duration(minutes: minutes), () {});
   }
 
   @override
@@ -73,8 +70,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
                 const SizedBox(height: 20),
                 TextFieldWidget(
-                  label: const Text('Time in minutes'),
-                  hintText: 'Time in minutes',
+                  label: const Text('Sequence of each task'),
+                  hintText: 'Sequence of each task',
                   keyboardType: TextInputType.number,
                   mycontroller: _sequenceOfTasks,
                 ),
