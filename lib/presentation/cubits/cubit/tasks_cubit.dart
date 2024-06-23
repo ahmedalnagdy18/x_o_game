@@ -10,7 +10,7 @@ import 'package:tic_tak_game/presentation/cubits/cubit/tasks_state.dart';
 class TasksCubit extends Cubit<TasksState> {
   Timer? _timer;
   Task? assignedTask;
-  final AddTask addTaskUseCase;
+  final AddTaskUsecase addTaskUseCase;
   TasksCubit(this.addTaskUseCase) : super(TasksInitial());
   List<Task> completetasks = [];
   List<Task> tasks = [];

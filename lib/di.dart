@@ -12,7 +12,7 @@ void init() {
   sl.registerFactory(() => TasksCubit(sl()));
 
   // Use cases
-  sl.registerLazySingleton(() => AddTask(sl()));
+  sl.registerLazySingleton(() => AddTaskUsecase(sl()));
 
   // Repository
   sl.registerLazySingleton<TaskRepository>(() => TaskRepositoryImpl());

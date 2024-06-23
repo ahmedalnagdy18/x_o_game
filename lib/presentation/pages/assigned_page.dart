@@ -15,7 +15,7 @@ class AssignedPage extends StatefulWidget {
 
 class _AssignedPageState extends State<AssignedPage> {
   bool oTurn = true; // 1st player is O, computer is X
-  List<String> displayElement = ['', '', '', '', '', '', '', '', ''];
+  List<String> gridViewList = ['', '', '', '', '', '', '', '', ''];
   int oScore = 0;
   int xScore = 0;
   int filledBoxes = 0;
@@ -91,7 +91,7 @@ class _AssignedPageState extends State<AssignedPage> {
                     Expanded(
                       flex: 4,
                       child: GridView.builder(
-                        itemCount: 9,
+                        itemCount: gridViewList.length,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
@@ -108,7 +108,7 @@ class _AssignedPageState extends State<AssignedPage> {
                               ),
                               child: Center(
                                 child: Text(
-                                  displayElement[index],
+                                  gridViewList[index],
                                   style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 35,
@@ -139,12 +139,12 @@ class _AssignedPageState extends State<AssignedPage> {
   }
 
   void _tapped(int index) {
-    if (displayElement[index] != '' || !oTurn || gameOver) {
+    if (gridViewList[index] != '' || !oTurn || gameOver) {
       return;
     }
 
     setState(() {
-      displayElement[index] = 'O';
+      gridViewList[index] = 'O';
       filledBoxes++;
       oTurn = !oTurn;
       _checkWinner();
@@ -156,8 +156,8 @@ class _AssignedPageState extends State<AssignedPage> {
 
   void _computerMove() {
     List<int> emptySpots = [];
-    for (int i = 0; i < displayElement.length; i++) {
-      if (displayElement[i] == '') {
+    for (int i = 0; i < gridViewList.length; i++) {
+      if (gridViewList[i] == '') {
         emptySpots.add(i);
       }
     }
@@ -167,7 +167,7 @@ class _AssignedPageState extends State<AssignedPage> {
       int computerMoveIndex = emptySpots[randomIndex];
 
       setState(() {
-        displayElement[computerMoveIndex] = 'X';
+        gridViewList[computerMoveIndex] = 'X';
         filledBoxes++;
         oTurn = !oTurn;
         _checkWinner();
@@ -177,7 +177,7 @@ class _AssignedPageState extends State<AssignedPage> {
 
   void _resetBoard() {
     setState(() {
-      displayElement = ['', '', '', '', '', '', '', '', ''];
+      gridViewList = ['', '', '', '', '', '', '', '', ''];
       filledBoxes = 0;
       oTurn = true;
       gameOver = false;
@@ -197,9 +197,9 @@ class _AssignedPageState extends State<AssignedPage> {
     ];
 
     for (var pattern in winningPatterns) {
-      String element1 = displayElement[pattern[0]];
-      String element2 = displayElement[pattern[1]];
-      String element3 = displayElement[pattern[2]];
+      String element1 = gridViewList[pattern[0]];
+      String element2 = gridViewList[pattern[1]];
+      String element3 = gridViewList[pattern[2]];
 
       if (element1.isNotEmpty && element1 == element2 && element1 == element3) {
         gameOver = true;

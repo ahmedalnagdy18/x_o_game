@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<TasksCubit>(
       create: (BuildContext context) {
-        return TasksCubit(sl.get<AddTask>());
+        return TasksCubit(sl.get<AddTaskUsecase>());
       },
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
